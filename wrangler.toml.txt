@@ -1,0 +1,6 @@
+name = "my-eshop-frontend"
+compatibility_date = "2026-11-25"
+
+[assets]
+directory = "./pars/build"
+not_found_handling = "single-page-application"
