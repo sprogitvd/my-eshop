@@ -69,7 +69,7 @@ function PlaceOrderScreen({ history }) {
                             <h2>payment method</h2>
                             <p>
                                 <strong>Method: </strong>
-                                typeof cart.paymentMethod === 'string' ? cart.paymentMethod : 'Not selected'}
+                                {typeof cart.paymentMethod === 'string' ? cart.paymentMethod : 'Not selected'}
                             </p>
                         </ListGroup.Item>
 
@@ -84,7 +84,7 @@ function PlaceOrderScreen({ history }) {
                                                 <ListGroup.Item key={item.product}>
                                                     <Row>
                                                         <Col md={2} className='my-auto'>
-                                                            <Image src={item.image} alt={item.name} fluid />
+                                                            <Image src={`${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}${item.image}`} alt={item.name} fluid />
                                                         </Col>
                                                         <Col className='my-auto'>
                                                             <Link to={`/product/${item.product}`}>{item.name}</Link>

@@ -35,7 +35,7 @@ import Message from '../components/Message'
           <Row>
           {/* colum Image */}
           <Col sm={12} md={6} lg={6} xl={6}>
-            <Image src={product.image} alt={product.name}/>
+            <Image src={`${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}${product.image}`} alt={product.name} fluid />
           </Col>
 
 

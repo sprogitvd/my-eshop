@@ -32,7 +32,7 @@ export const fatchProducts = () => async(dispatch) => {
 export const fatchProductDetails = (id) => async(dispatch) => {
     try{
         dispatch({ type: PRODUCT_DETAILS_REQUEST })
-        const {data} = await axios.get(`${baseURL}/api/v1/products/${id}/`)
+        const {data} = await axios.get(`${baseURL}/api/v1/products/${id}/`) // ← اسلش به آخر اضافه شد
         dispatch({ 
             type: PRODUCT_DETAILS_SUCCESS,
             payload: data
@@ -40,7 +40,6 @@ export const fatchProductDetails = (id) => async(dispatch) => {
     } catch(error){
         dispatch({ 
             type: PRODUCT_DETAILS_FAIL,
-            // اصلاح مهم: به جای error.response فقط متن خطا فرستاده می‌شود
             payload: error.response && error.response.data.detail
                 ? error.response.data.detail
                 : error.message

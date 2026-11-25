@@ -45,7 +45,7 @@ function CartScreen({match, location, history}) {
                     <ListGroup.Item key={item.product}>
                         <Row>
                             <Col md={2}>
-                                <Image src={item.image} alt={item.name} fluid rounded/>
+                                <Image src={`${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}${item.image}`} alt={item.name} fluid />
                             </Col>
 
                             <Col md={3}>

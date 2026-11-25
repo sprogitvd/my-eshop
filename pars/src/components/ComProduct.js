@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from 'react-bootstrap'
+import { Card ,Image} from 'react-bootstrap'
 import Rating from './Rating'
 import { Link } from 'react-router-dom'
 
@@ -10,7 +10,7 @@ function ComProduct({product}) {
       <Card className="p-3 my-3 rounded">
 
             <Link to={`/product/${product._id}`}> 
-                <Card.Img src={product.image} className='card-img-top'/>
+                <Image src={`${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}${product.image}`} alt={product.name} fluid />
             </Link>
 
             <Card.Body>

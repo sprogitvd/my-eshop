@@ -126,7 +126,7 @@ function OrderScreen({ match }) {
                         <ListGroup.Item>
                           <Row>
                             <Col md={2} className='my-auto'>
-                              <Image src={item.image} alt={item.name} fluid />
+                              <Image src={`${process.env.REACT_APP_API_BASE_URL || 'http://127.0.0.1:8000'}${item.image}`} alt={item.name} fluid />
                             </Col>
                             <Col className='my-auto'>
                               <Link to={`/product/${item.product}`}>{item.name}</Link>
