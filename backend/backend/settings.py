@@ -131,9 +131,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/images/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-MEDIA_ROOT = BASE_DIR / 'static' / 'images'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
+# این خط جدید را برای پنل ادمین اضافه کنید
+STATIC_ROOT = BASE_DIR / 'staticfiles' 
+
+MEDIA_ROOT = BASE_DIR / 'static' / 'images'
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
