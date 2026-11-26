@@ -98,93 +98,125 @@ def getUsers(request):
     return Response(serializer.data)
 
 
-#registerثبت نام
+ #registerثبت نام
 @api_view(['POST'])
 def registerUser(request):
-    data= request.data
-    
+    data = request.data
     try:
+        # ساخت کاربر با وضعیت فعال (True)
         user = User.objects.create(
-            first_name = data['name'],
-            username= data['email'],
-            email = data['email'],
-            password= make_password(data['password']),
-            is_active=False,
+            first_name=data['name'],
+            username=data['email'],
+            email=data['email'],
+            password=make_password(data['password']),
+            is_active=True  # ← اینجا به True تغییر کرد
         )
+        
+        # از آنجایی که کاربر فعال است، دیگر نیازی به ارسال ایمیل نیست
+        serializer = UserSerializerWithToken(user, many=False)
+        return Response(serializer.data)
 
-        #serializer= UserSerializerWithToken(user, many=False)
-        #return Response(serializer.data)
-    #except:
-        #message = {'detail' : 'User with this email already exists.'}
-
-        #return Response(message, status=status.HTTP_400_BAD_REQUEST)
-
-         # create token
-        token = RefreshToken.for_user(user).access_token
-
-        # send activation email to user
-        subject = f"E-Shop Activation email"
-        body = f"Hi {user.username} welcome to E-Shop.\n Please use below link for active your account! \n\n" \
-            f"http://127.0.0.1:8000/api/v1/users/verify/{str(token)}/"
-
-        data = {
-            'subject': subject,
-            'body': body,
-            'to': user.email,
-        }
-        result = emailSender(data)
-
-        if result:
-            message = {
-                'detail': 'Welcome to E-Shop. You should verify your email.Please check your Inbox. We sent an email.'
-            }
-            return Response(message, status=status.HTTP_201_CREATED)
-        else:
-            message = {
-                'detail': 'There\'s a problem on sending email.'
-            }
-            return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-    except:
-        user = User.objects.get(username=username)
-
-        # update the user's password
-        user.password = make_password(password)
-        user.save()
-
-        if user and not user.is_active:
-
-            # create token
-            token = RefreshToken.for_user(user).access_token
-
-            # send activation email to user
-            subject = f"E-Shop Activation email"
-            body = f"Hi {user.username} welcome back to E-Shop.\n Please use below link for active your account! \n\n" \
-                f"http://127.0.0.1:8000/api/v1/users/verify/{str(token)}/"
-
-            data = {
-                'subject': subject,
-                'body': body,
-                'to': user.email,
-            }
-            result = emailSender(data)
-
-            if result:
-                message = {
-                    'detail': 'User with this email already exists but is not active. You should verify your email.Please check your Inbox. We sent an email.Using new password'
-                }
-                return Response(message, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                message = {
-                    'detail': 'There\'s a problem on sending email.'
-                }
-                return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        elif user and user.is_active:
-            message = {
-                'detail': 'User with this email already exists and is active too. Please login.Using new password'
-            }
+    except Exception as e:
+        # اگر کاربر از قبل وجود داشته باشد
+        try:
+            user = User.objects.get(username=data['email'])
+            user.password = make_password(data['password'])
+            user.is_active = True # کاربر قبلی را هم فعال می‌کنیم
+            user.save()
+            serializer = UserSerializerWithToken(user, many=False)
+            return Response(serializer.data)
+        except:
+            message = {'detail': 'User with this email already exists.'}
             return Response(message, status=status.HTTP_400_BAD_REQUEST)
 
+
+#  #registerثبت نام
+# @api_view(['POST'])
+# def registerUser(request):
+#     data= request.data
+    
+#     try:
+#         user = User.objects.create(
+#             first_name = data['name'],
+#             username= data['email'],
+#             email = data['email'],
+#             password= make_password(data['password']),
+#             is_active=False,
+#         )
+
+#         #serializer= UserSerializerWithToken(user, many=False)
+#         #return Response(serializer.data)
+#     #except:
+#         #message = {'detail' : 'User with this email already exists.'}
+
+#         #return Response(message, status=status.HTTP_400_BAD_REQUEST)
+
+#          # create token
+#         token = RefreshToken.for_user(user).access_token
+
+#         # send activation email to user
+#         subject = f"E-Shop Activation email"
+#         body = f"Hi {user.username} welcome to E-Shop.\n Please use below link for active your account! \n\n" \
+#             f"http://127.0.0.1:8000/api/v1/users/verify/{str(token)}/"
+
+#         data = {
+#             'subject': subject,
+#             'body': body,
+#             'to': user.email,
+#         }
+#         result = emailSender(data)
+
+#         if result:
+#             message = {
+#                 'detail': 'Welcome to E-Shop. You should verify your email.Please check your Inbox. We sent an email.'
+#             }
+#             return Response(message, status=status.HTTP_201_CREATED)
+#         else:
+#             message = {
+#                 'detail': 'There\'s a problem on sending email.'
+#             }
+#             return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+#     except:
+#         user = User.objects.get(username=username)
+
+#         # update the user's password
+#         user.password = make_password(password)
+#         user.save()
+
+#         if user and not user.is_active:
+
+#             # create token
+#             token = RefreshToken.for_user(user).access_token
+
+#             # send activation email to user
+#             subject = f"E-Shop Activation email"
+#             body = f"Hi {user.username} welcome back to E-Shop.\n Please use below link for active your account! \n\n" \
+#                 f"http://127.0.0.1:8000/api/v1/users/verify/{str(token)}/"
+
+#             data = {
+#                 'subject': subject,
+#                 'body': body,
+#                 'to': user.email,
+#             }
+#             result = emailSender(data)
+
+#             if result:
+#                 message = {
+#                     'detail': 'User with this email already exists but is not active. You should verify your email.Please check your Inbox. We sent an email.Using new password'
+#                 }
+#                 return Response(message, status=status.HTTP_400_BAD_REQUEST)
+#             else:
+#                 message = {
+#                     'detail': 'There\'s a problem on sending email.'
+#                 }
+#                 return Response(message, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#         elif user and user.is_active:
+#             message = {
+#                 'detail': 'User with this email already exists and is active too. Please login.Using new password'
+#             }
+#             return Response(message, status=status.HTTP_400_BAD_REQUEST)
+ 
 
 @api_view(['GET'])
 def verifyEmail(request, token):
