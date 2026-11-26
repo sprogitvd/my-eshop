@@ -30,18 +30,18 @@ def _parse_zibal_datetime(value):
 
 
 def zibalCreatePay(order):
-    """
-    ایجاد یک تراکنش جدید در سرور زیبال.
-    ورودی: order (شیء سفارش)
-    خروجی: پاسخ HTTP از زیبال (response)
-    """
+    # محاسبه مبلغ و اعمال حداقل ۱۰۰۰۰ ریال برای تست
+    calculated_amount = int(order.totalPrice * 10)
+    final_amount = max(calculated_amount, 10000) 
+    
     body = {
         "merchant": ZIBAL_MERCHANT,
-        "amount": int(order.totalPrice * 10),  # تبدیل تومان به ریال
-        "callbackUrl": "http://127.0.0.1:8000/api/v1/air/result/",
+        "amount": final_amount,  # ← استفاده از مبلغ نهایی
+        "callbackUrl": "https://my-eshop-backend-e6mg.onrender.com/api/v1/air/result/", 
         "description": f"Order {str(order._id)}",
-        "orderId": str(order._id),  # زیبال این را در callback و verify برمی‌گرداند
+        "orderId": str(order._id),
     }
+    # ...
 
     response = requests.post(
         ZIBAL_REQUEST_URL,
