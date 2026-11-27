@@ -1,11 +1,9 @@
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.http import HttpResponseRedirect
-
 from base.models import Idpay, Order
 from base.utils.pay_utils import zibalVerify, zibalCompleteDB, zibalUpdateDB
-
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.response import Response
+from rest_framework import status
 
 @api_view(['GET'])
 @permission_classes([])
@@ -25,10 +23,13 @@ def IdPayCallBack(request):
         return Response({'detail': 'Transaction not found'},
                         status=status.HTTP_404_NOT_FOUND)
 
+    # آدرس فرانت‌اند شما
+    frontend_url = "https://my-eshop-frontend.nazanin40587.workers.dev"
+
     # اگر قبلاً پرداخت شده، دوباره verify نکن
     if order.isPaid:
         return HttpResponseRedirect(
-            f"http://localhost:3000/payresult/{track_id}/{order._id}/{track_id}?db=True"
+            f"{frontend_url}/payresult/{track_id}/{order._id}/{track_id}?db=True"
         )
 
     # تأیید تراکنش در زیبال
@@ -37,7 +38,7 @@ def IdPayCallBack(request):
     except Exception:
         dbStatus = zibalUpdateDB(pay_entry, 500, track_id)
         return HttpResponseRedirect(
-            f"http://localhost:3000/payresult/{track_id}/{order._id}/{track_id}?db={dbStatus}"
+            f"{frontend_url}/payresult/{track_id}/{order._id}/{track_id}?db={dbStatus}"
         )
 
     if str(response.status_code).startswith('2'):
@@ -48,10 +49,10 @@ def IdPayCallBack(request):
         else:
             dbStatus = zibalUpdateDB(pay_entry, result, track_id)
         return HttpResponseRedirect(
-            f"http://localhost:3000/payresult/{track_id}/{order._id}/{track_id}?db={dbStatus}"
+            f"{frontend_url}/payresult/{track_id}/{order._id}/{track_id}?db={dbStatus}"
         )
     else:
         dbStatus = zibalUpdateDB(pay_entry, 500, track_id)
         return HttpResponseRedirect(
-            f"http://localhost:3000/payresult/{track_id}/{order._id}/{track_id}?db={dbStatus}"
+            f"{frontend_url}/payresult/{track_id}/{order._id}/{track_id}?db={dbStatus}"
         )

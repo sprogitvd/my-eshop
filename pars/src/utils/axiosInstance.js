@@ -17,7 +17,13 @@ const axiosInstance = (userInfo, dispatch) => {
     })
 
     instance.interceptors.request.use(async req => {
-        const user = jwt_decode(userInfo.access)
+        let user;
+try {
+    user = jwt_decode(userInfo.access);
+} catch (error) {
+    // اگر توکن نامعتبر بود، درخواست را بدون رفرش توکن ادامه بده
+    return req; 
+}
         const isExpired = dayjs.unix(user.exp).diff(dayjs()) < 5000;
 
         if (!isExpired) return req
